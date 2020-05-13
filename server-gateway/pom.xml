@@ -36,7 +36,7 @@
 
     </dependencies>
     <build>
-        <finalName>api-gateway</finalName>
+        <finalName>server-gateway</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
