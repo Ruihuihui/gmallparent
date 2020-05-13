@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--namespace 定义接口的全路径-->
+<mapper namespace="com.atguigu.gmall.product.mapper.SpuSaleAttrMapper">
+    <resultMap id="spuSaleAttrMap" type="com.atguigu.gmall.model.product.SpuSaleAttr" autoMapping="true">
+        <id property="id" column="id"></id>
+        <collection property="spuSaleAttrValueList" ofType="com.atguigu.gmall.model.product.SpuSaleAttrValue" autoMapping="true">
+            <id property="id" column="sale_attr_value_id"></id>
+        </collection>
+    </resultMap>
+
+    <sql id="spuSaleAttr">
+         sa.id,sa.spu_id,sa.base_sale_attr_id,sa.sale_attr_name,
+               sav.id sale_attr_value_id,sav.sale_attr_value_name
+    </sql>
+    <select id="getSpuSaleAttrList" resultMap="spuSaleAttrMap" >
+        select
+        <include refid="spuSaleAttr"></include>
+        from spu_sale_attr sa inner join  spu_sale_attr_value sav
+            on sa.spu_id = sav.spu_id and
+           sa.base_sale_attr_id = sav.base_sale_attr_id
+        where sa.spu_id= #{spuId}
+    </select>
+
+    <select id="selectSpuSaleAttrListCheckBySku" resultMap="spuSaleAttrMap" >
+        select
+            sa.id,sa.spu_id,
+            sa.base_sale_attr_id,
+            sa.sale_attr_name,
+            sav.id sale_attr_value_id,
+            sav.sale_attr_value_name,
+            skv.sku_id,
+            if(skv.sku_id is null,0,1) is_checked
+        from spu_sale_attr sa inner join  spu_sale_attr_value sav
+            on sa.spu_id = sav.spu_id and
+                sa.base_sale_attr_id = sav.base_sale_attr_id
+            left join  sku_sale_attr_value skv
+            on skv.sale_attr_value_id = sav.id
+            and skv.sku_id = #{skuId}
+            where sa.spu_id= #{spuId}
+        order by sav.base_sale_attr_id,sav.id;
+    </select>
+</mapper>
